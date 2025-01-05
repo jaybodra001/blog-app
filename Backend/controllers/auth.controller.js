@@ -1,4 +1,5 @@
 import { User } from "../models/user.model.js"
+import {Blog} from '../models/blog.model.js';
 import bcryptjs from "bcryptjs";
 import { generateTokenAndSetCookie } from "../utils/generateToken.js"
 
@@ -38,8 +39,6 @@ export async function signup(req,res) {
             password: hashedPassword,
             username,
         })
-
-        
         generateTokenAndSetCookie(newUser._id, res)
         
         await newUser.save()
@@ -99,3 +98,97 @@ export async function authCheck(req, res) {
 		res.status(500).json({ success: false, message: "Internal server error" });
 	}
 }
+
+export async function createBlog(req, res) {
+    try {
+      const { title, content, image } = req.body;
+  
+      if (!title || !content || !image) {
+        return res.status(400).json({ success: false, message: "Title, content and image are required!" });
+      }
+  
+      const newBlog = new Blog({
+        title,
+        content,
+        image,
+        author: req.user._id,
+      });
+  
+      await newBlog.save();
+  
+      res.status(201).json({ success: true, message: "Blog created successfully!", blog: newBlog });
+    } catch (error) {
+      console.log("Error in createBlog controller:", error.message);
+      res.status(500).json({ success: false, message: "Internal server error!" });
+    }
+}
+
+//user own blog....
+export async function getUserBlogs(req, res) {
+    try {
+      const userId = req.user._id;
+  
+      const blogs = await Blog.find({ author: userId }).sort({ createdAt: -1 });
+  
+      res.status(200).json({ success: true, blogs });
+    } catch (error) {
+      console.log("Error in getUserBlogs controller:", error.message);
+      res.status(500).json({ success: false, message: "Internal server error!" });
+    }
+  }
+
+// Update a blog
+export async function updateBlog(req, res) {
+    try {
+      const { id } = req.params;
+      const { title, content, image } = req.body;
+  
+      const blog = await Blog.findById(id);
+  
+      if (!blog) {
+        return res.status(404).json({ success: false, message: "Blog not found!" });
+      }
+  
+      // Ensure only the author can update the blog
+      if (blog.author.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ success: false, message: "You are not authorized to update this blog!" });
+      }
+  
+      blog.title = title || blog.title;
+      blog.content = content || blog.content;
+      blog.image = image || blog.image;
+      blog.updatedAt = new Date();
+  
+      await blog.save();
+  
+      res.status(200).json({ success: true, message: "Blog updated successfully!", blog });
+    } catch (error) {
+      console.log("Error in updateBlog controller:", error.message);
+      res.status(500).json({ success: false, message: "Internal server error!" });
+    }
+  }
+  
+  // Delete a blog
+  export async function deleteBlog(req, res) {
+    try {
+      const { id } = req.params;
+  
+      const blog = await Blog.findById(id);
+        
+      if (!blog) {
+        return res.status(404).json({ success: false, message: "Blog not found!" });
+      }
+  
+      // Ensure only the author can delete the blog
+      if (blog.author.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ success: false, message: "You are not authorized to delete this blog!" });
+      }
+  
+      await Blog.deleteOne({ _id: id });
+  
+      res.status(200).json({ success: true, message: "Blog deleted successfully!" });
+    } catch (error) {
+      console.log("Error in deleteBlog controller:", error.message);
+      res.status(500).json({ success: false, message: "Internal server error!" });
+    }
+  }
