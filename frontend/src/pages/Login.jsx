@@ -10,7 +10,7 @@ const Login = () => {
 
   const handleLogin = async (e) => {
 		e.preventDefault();
-	//	const success = await login({ email, password })
+      await login({ email, password })
    // console.log("Login success:", success)
 	};	
 

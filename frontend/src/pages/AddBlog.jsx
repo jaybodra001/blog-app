@@ -2,33 +2,27 @@ import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import Footer from "../components/Footer";
+import { useAuthStore } from '../store/authUser'; // Import the store
+import toast from "react-hot-toast";
 
 const AddBlog = () => {
-  const [formData, setFormData] = useState({
-    title: "",
-    content: "",
-    image: null,
-  });
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [imageUrl, setImageFile] = useState(""); 
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
+  const { addBlog, isAddingBlog } = useAuthStore();
 
-  const handleFileChange = (e) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      image: e.target.files[0],
-    }));
-  };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission here (e.g., API call to add the blog)
-    console.log(formData);
+    //alert(imageUrl)
+
+    
+
+    await addBlog({title, content, imageUrl});
+    setTitle("")
+    setContent("")
+    setImageFile("")
   };
 
   return (
@@ -58,8 +52,8 @@ const AddBlog = () => {
                   type="text"
                   id="title"
                   name="title"
-                  value={formData.title}
-                  onChange={handleChange}
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
                   required
                   className="w-full p-2 border border-gray-300 rounded-md"
                 />
@@ -76,8 +70,8 @@ const AddBlog = () => {
                 <textarea
                   id="content"
                   name="content"
-                  value={formData.content}
-                  onChange={handleChange}
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
                   required
                   rows="6"
                   className="w-full p-2 border border-gray-300 rounded-md"
@@ -90,14 +84,15 @@ const AddBlog = () => {
                   htmlFor="image"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Image
+                  Image URL
                 </label>
                 <input
-                  type="file"
+                  type="text"
                   id="image"
-                  name="image"
-                  onChange={handleFileChange}
-                  accept="image/*"
+                  name="imageUrl"
+                  value={imageUrl}
+                  onChange={(e) => setImageFile(e.target.value)}
+                  required
                   className="w-full p-2 border border-gray-300 rounded-md"
                 />
               </div>
@@ -106,8 +101,9 @@ const AddBlog = () => {
               <button
                 type="submit"
                 className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+                disabled={isAddingBlog} 
               >
-                Add Blog
+                {isAddingBlog ? "Adding..." : "Add Blog"}
               </button>
             </form>
           </div>

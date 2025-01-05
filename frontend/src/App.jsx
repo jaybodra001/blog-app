@@ -22,14 +22,15 @@ function App() {
   return (
     <>
        <Routes>
-       <Route path='/' element={<Home />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/register' element={<Register/>} />
-        <Route path='/add-blog' element={<AddBlog/>} />
-        <Route path='/manage-blogs' element={<ManageBlog/>} />
-        <Route path='/view-blogs' element={<ViewBlog />} />
-        <Route path='/edit-blog' element={<EditBlog />} />
+        <Route path='/' element={user ? <Home /> : <Navigate to ={"/login"} />} />
+        <Route path='/login' element={!user ? <Login /> : <Navigate to={"/"}/>} />
+        <Route path='/signup' element={!user ? <Register /> : <Navigate to ={"/"} />} />
+        <Route path='/add-blog' element={user ? <AddBlog /> : <Navigate to ={"/login"} />} />
+        <Route path='/manage-blogs'  element={user ? <ManageBlog /> : <Navigate to ={"/login"} />} />
+        <Route path='/view-blogs' element={user ? <ViewBlog /> : <Navigate to ={"/login"} />}  />
+        <Route path='/edit-blog' element={user ? <EditBlog /> : <Navigate to ={"/login"} />} />
       </Routes>
+      <Toaster />
     </>
   )
 }

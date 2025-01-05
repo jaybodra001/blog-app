@@ -16,7 +16,7 @@ const blogSchema = new mongoose.Schema(
       ref: 'User', // Reference to the User model
       required: true,
     },
-    image: {
+    imageUrl: {
       type: String, // URL or file path for the blog's image
       required: false,
     },

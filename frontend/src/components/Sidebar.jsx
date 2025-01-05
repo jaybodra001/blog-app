@@ -6,7 +6,7 @@ const Sidebar = () => {
 
   const { logout } = useAuthStore();
   return (
-    <div className="bg-gray-600 w-60 text-white">
+    <div className="bg-slate-600 w-60 text-white">
       <ul className="space-y-1">
         <li>
           <NavLink
@@ -53,7 +53,7 @@ const Sidebar = () => {
               }`
             }
           >
-            View Blogs
+            Publish Blogs
           </NavLink>
         </li>
         <li

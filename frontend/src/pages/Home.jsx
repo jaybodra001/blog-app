@@ -1,10 +1,32 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Sidebar from "../components/Sidebar";
+import { useAuthStore } from "../store/authUser"; // Assuming you're using a store for dynamic data
 
 const Home = () => {
+  const { blogs, getUserBlogs } = useAuthStore();
+  const [totalBlogs, setTotalBlogs] = useState(0);
+  const [activeBlogs, setActiveBlogs] = useState(0);
+  const [inactiveBlogs, setInactiveBlogs] = useState(0);
+
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      await getUserBlogs();
+    };
+
+    fetchBlogs();
+  }, [getUserBlogs]);
+
+  useEffect(() => {
+    if (blogs.length > 0) {
+      setTotalBlogs(blogs.length);
+      setActiveBlogs(blogs.filter((blog) => blog.isPublished).length);
+      setInactiveBlogs(blogs.filter((blog) => !blog.isPublished).length);
+    }
+  }, [blogs]);
+
   return (
     <div>
       <div className="flex flex-col min-h-screen">
@@ -23,37 +45,25 @@ const Home = () => {
                 {/* Total Blogs */}
                 <div className="bg-blue-500 text-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
                   <h3 className="text-xl font-bold">Total Blogs</h3>
-                  <p className="text-2xl mt-2">100</p>
-                  <Link
-                    to="/blogs"
-                    className="text-sm underline mt-4 inline-block"
-                  >
-                    View all blogs
-                  </Link>
+                  <div className="flex justify-center items-center mt-2">
+                    <p className="text-4xl font-bold">{totalBlogs}</p>
+                  </div>
                 </div>
 
                 {/* Active Blogs */}
                 <div className="bg-green-500 text-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
                   <h3 className="text-xl font-bold">Active Blogs</h3>
-                  <p className="text-2xl mt-2">80</p>
-                  <Link
-                    to="/blogs/active"
-                    className="text-sm underline mt-4 inline-block"
-                  >
-                    View active blogs
-                  </Link>
+                  <div className="flex justify-center items-center mt-2">
+                    <p className="text-4xl font-bold">{activeBlogs}</p>
+                  </div>
                 </div>
 
                 {/* Inactive Blogs */}
                 <div className="bg-red-500 text-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
                   <h3 className="text-xl font-bold">Inactive Blogs</h3>
-                  <p className="text-2xl mt-2">20</p>
-                  <Link
-                    to="/blogs/inactive"
-                    className="text-sm underline mt-4 inline-block"
-                  >
-                    View inactive blogs
-                  </Link>
+                  <div className="flex justify-center items-center mt-2">
+                    <p className="text-4xl font-bold">{inactiveBlogs}</p>
+                  </div>
                 </div>
               </div>
             </div>
