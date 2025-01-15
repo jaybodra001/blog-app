@@ -1,5 +1,7 @@
 # Blog App
 
+Live: https://task-management-app-pt38.onrender.com
+
 ## Overview
 The Blog App is a full-stack web application designed for creating, managing, and reading blogs. It features a responsive frontend built with React.js and a robust backend powered by Node.js, Express.js, and MongoDB. The app includes user authentication, blog management, and other essential features to deliver a seamless blogging experience.
 
